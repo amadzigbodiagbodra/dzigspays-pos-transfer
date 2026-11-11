@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DzigsPay – Result and receipt</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0E1A24;--muted:#4F5E69;--line:#D7DDD9;--brand:#0B6B58}
+*{box-sizing:border-box}
+body{margin:0;background:#E3E8E5;font-family:Inter,system-ui,-apple-system,sans-serif;color:var(--ink)}
+.preview{max-width:390px;margin:0 auto;padding:12px 16px 8px;font-size:12px;color:var(--muted)}
+.preview .row{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.preview button{font:inherit;font-weight:600;padding:6px 10px;border-radius:999px;border:1px solid #B9C3BD;background:#fff;color:var(--ink);cursor:pointer}
+.preview button[aria-pressed=true]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.app{position:relative;max-width:390px;min-height:844px;margin:0 auto 24px;background:#F4F6F4;display:flex;flex-direction:column}
+@media(min-width:430px){.app{border-radius:28px;box-shadow:0 8px 30px rgba(14,26,36,.12);overflow:hidden}}
+.top{display:flex;align-items:center;justify-content:space-between;padding:20px 20px 0}
+.brand{display:flex;align-items:center;gap:10px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:20px}
+.chip{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:500;color:var(--muted)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--brand)}
+.prog{display:flex;gap:6px;padding:20px 20px 0}.prog i{flex:1;height:4px;border-radius:2px;background:var(--brand)}
+.hero{display:flex;align-items:center;gap:14px;padding:24px 20px 0}
+.ic{flex:none;width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.hero h1{margin:0 0 4px;font-family:'Space Grotesk',sans-serif;font-size:26px;line-height:1.15;letter-spacing:-.01em}
+.hero p{margin:0;font-size:14px;line-height:1.35;color:var(--muted)}
+.big{display:flex;align-items:baseline;gap:10px;padding:16px 20px 0}
+.big .cur{font-size:20px;font-weight:600;color:var(--muted)}
+.big .num{font-family:'Space Grotesk',sans-serif;font-size:44px;line-height:1.1;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.big .pill{margin-left:auto;padding:4px 12px;border-radius:999px;font-size:13px;font-weight:700}
+.card{margin:16px 20px 0;padding:12px 20px;border-radius:18px;background:#fff;border:1px solid var(--line);display:flex;flex-direction:column;gap:10px;font-size:14px}
+.kv{display:flex;justify-content:space-between;gap:12px}.kv span:first-child{color:var(--muted)}.kv span:last-child{font-weight:500;text-align:right}
+.kv.ref span:last-child{font-weight:600;font-variant-numeric:tabular-nums}
+.box{margin:12px 20px 0;padding:14px 16px;border-radius:14px}
+.box b{font-size:14px}
+.box .l{display:flex;gap:8px;margin-top:6px;font-size:14px;line-height:1.4}
+.foot{margin-top:auto;display:flex;flex-direction:column;gap:10px;padding:16px 20px 24px}
+.foot small{text-align:center;font-size:13px;line-height:1.35;color:var(--muted)}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;height:56px;border-radius:14px;border:0;background:var(--brand);color:#fff;font:600 17px Inter,system-ui,sans-serif;text-decoration:none;cursor:pointer}
+.btn.sec{height:52px;background:transparent;border:1.5px solid #B9C3BD;color:var(--ink);font-size:16px}
+.toast{position:absolute;left:20px;right:20px;bottom:150px;padding:12px 16px;border-radius:12px;background:var(--ink);color:#fff;font-size:14px;line-height:1.35}
+</style>
+</head>
+<body>
+
+<div class="preview">
+Preview state (design aid, not part of the screen)
+<div class="row">
+<button type="button" data-s="success">Confirmed</button>
+<button type="button" data-s="pending">Pending</button>
+<button type="button" data-s="failed">Failed</button>
+</div>
+</div>
+
+<main class="app">
+<div class="top">
+<div class="brand"><svg width="36" height="36" viewBox="0 0 36 36" aria-hidden="true"><rect width="36" height="36" rx="10" fill="#0B6B58"/><path d="M12 9h6.5a9 9 0 0 1 0 18H12z" fill="none" stroke="#fff" stroke-width="3" stroke-linejoin="round"/><path d="M15 18h6" stroke="#8FE0C8" stroke-width="3" stroke-linecap="round"/></svg>DzigsPay</div>
+<div class="chip"><span class="dot"></span>POS-0142</div>
+</div>
+<div class="prog"><i></i><i></i><i></i><i></i><i></i></div>
+
+<div class="hero" role="status" aria-live="polite">
+<span class="ic" id="ic"></span>
+<div><h1 id="title"></h1><p id="sub"></p></div>
+</div>
+<div class="big"><span class="cur">GHS</span><span class="num" id="num">250.00</span><span class="pill" id="pill"></span></div>
+
+<div class="card" id="details"></div>
+<div class="box" id="box"></div>
+
+<div class="foot" id="foot"></div>
+<div class="toast" id="toast" role="status" hidden></div>
+</main>
+
+<script>
+(function () {
+  var q = new URLSearchParams(location.search);
+  var c = parseInt(q.get('c'), 10);
+  if (!isFinite(c)) c = 25000;
+  var amt = String(Math.floor(c / 100)).replace(/\B(?=(\d{3})+(?!\d))/g, ',') + '.' + String(c % 100).padStart(2, '0');
+  document.getElementById('num').textContent = amt;
+  var s = ['success', 'pending', 'failed'].indexOf(q.get('s')) >= 0 ? q.get('s') : 'success';
+
+  var icons = {
+    success: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+    pending: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+    failed: '<path d="M6 6l12 12M18 6L6 18"/>'
+  };
+  var T = {
+    success: {
+      title: 'Payment received', sub: 'DzigsPay verified this transfer.', pill: 'Confirmed', tint: '#E3F2EE', fg: '#0B6B58', box: '#E8F1EE',
+      boxTitle: 'Receipt', items: ['Reprint any time from this screen or sales history.', 'A reprint is marked REPRINT and never sends a new transfer.'],
+      tl: 'Time', tv: '11 Nov 2026, 09:03', reason: false,
+      secondary: 'Reprint receipt', hint: 'Prints a copy only. No new transfer is sent.',
+      toast: 'Reprint sent to the printer, marked REPRINT. No new transfer was made.'
+    },
+    pending: {
+      title: 'Payment pending', sub: 'The bank hasn’t confirmed this transfer yet.', pill: 'Pending', tint: '#FFF1D6', fg: '#7A4B00', box: '#FFF6E4',
+      boxTitle: 'What to do now', items: ['Don’t ask the customer to pay again.', 'Check status again in a few minutes.', 'If they were charged, keep the reference above.'],
+      tl: 'Last checked', tv: '11 Nov 2026, 09:06', reason: false,
+      secondary: 'Print pending slip', hint: 'The slip shows the reference only. It is not proof of payment.',
+      toast: 'Pending slip printed. No new transfer was made.'
+    },
+    failed: {
+      title: 'Payment not completed', sub: 'DzigsPay verified that no money moved.', pill: 'Failed', tint: '#FDEAEA', fg: '#A61B1B', box: '#FDF0F0',
+      boxTitle: 'What to do now', items: ['Nothing was charged to the customer.', 'They can check their bank app, or pay another way.', 'Trying again creates a new payment with a new reference.'],
+      tl: 'Time', tv: '11 Nov 2026, 09:03', reason: true,
+      secondary: 'Print failure slip', hint: 'Prints the reference and reason. No new transfer is sent.',
+      toast: 'Failure slip printed. No new transfer was made.'
+    }
+  };
+  var printer = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 9V4h10v5"/><rect x="4" y="9" width="16" height="8" rx="2"/><path d="M7 14h10v6H7z"/></svg>';
+  var toastTimer;
+
+  function render() {
+    var t = T[s];
+    var ic = document.getElementById('ic');
+    ic.style.background = t.tint;
+    ic.innerHTML = '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="' + t.fg + '" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + icons[s] + '</svg>';
+    document.getElementById('title').textContent = t.title;
+    document.getElementById('sub').textContent = t.sub;
+    var pill = document.getElementById('pill');
+    pill.textContent = t.pill; pill.style.background = t.tint; pill.style.color = t.fg;
+
+    document.getElementById('details').innerHTML =
+      '<div class="kv ref"><span>Reference</span><span>DZP-7Q4K-2291</span></div>' +
+      '<div class="kv"><span>Paid to</span><span>Dzigs Fresh Market Ltd</span></div>' +
+      '<div class="kv"><span>Method</span><span>Account Transfer</span></div>' +
+      '<div class="kv"><span>' + t.tl + '</span><span>' + t.tv + '</span></div>' +
+      (t.reason ? '<div class="kv"><span>Reason</span><span>Declined by the customer’s bank</span></div>' : '');
+
+    var box = document.getElementById('box');
+    box.style.background = t.box;
+    box.innerHTML = '<b>' + t.boxTitle + '</b>' + t.items.map(function (i) { return '<div class="l"><span aria-hidden="true">•</span><span>' + i + '</span></div>'; }).join('');
+
+    var primary = s === 'success' ? '<a class="btn" href="1-select-method.html">Done, start new sale</a>'
+      : s === 'failed' ? '<a class="btn" href="1-select-method.html">Try again</a>'
+      : '<button type="button" class="btn" id="check">Check status</button>';
+    // Print buttons only print. They never link to or call anything that starts a transfer.
+    document.getElementById('foot').innerHTML = primary +
+      '<button type="button" class="btn sec" id="print">' + printer + t.secondary + '</button><small>' + t.hint + '</small>';
+
+    document.getElementById('print').onclick = function () { flash(t.toast); };
+    var chk = document.getElementById('check');
+    if (chk) chk.onclick = function () { flash('Still pending. Status check only, no new payment was sent.'); };
+
+    document.querySelectorAll('.preview button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-s') === s)); });
+  }
+  function flash(msg) {
+    var el = document.getElementById('toast');
+    el.textContent = msg; el.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { el.hidden = true; }, 3500);
+  }
+  document.querySelector('.preview .row').addEventListener('click', function (e) {
+    var b = e.target.closest('button');
+    if (b) { s = b.getAttribute('data-s'); document.getElementById('toast').hidden = true; render(); }
+  });
+  render();
+})();
+</script>
+</body>
+</html>

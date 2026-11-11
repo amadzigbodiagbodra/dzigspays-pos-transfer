@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DzigsPay – Select payment method</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0E1A24;--muted:#4F5E69;--line:#D7DDD9;--brand:#0B6B58}
+*{box-sizing:border-box}
+body{margin:0;background:#E3E8E5;font-family:Inter,system-ui,-apple-system,sans-serif;color:var(--ink)}
+.preview{max-width:390px;margin:0 auto;padding:12px 16px 8px;font-size:12px;color:var(--muted)}
+.preview .row{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.preview button{font:inherit;font-weight:600;padding:6px 10px;border-radius:999px;border:1px solid #B9C3BD;background:#fff;color:var(--ink);cursor:pointer}
+.preview button[aria-pressed=true]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.app{max-width:390px;min-height:844px;margin:0 auto 24px;background:#F4F6F4;display:flex;flex-direction:column}
+@media(min-width:430px){.app{border-radius:28px;box-shadow:0 8px 30px rgba(14,26,36,.12);overflow:hidden}}
+.top{display:flex;align-items:center;justify-content:space-between;padding:20px 20px 0}
+.brand{display:flex;align-items:center;gap:10px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:20px}
+.chip{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:500;color:var(--muted)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--brand)}
+.prog{display:flex;gap:6px;padding:20px 20px 0}.prog i{flex:1;height:4px;border-radius:2px;background:var(--line)}.prog i.on{background:var(--brand)}
+.head{padding:20px 20px 0}.step{font-size:12px;font-weight:600;letter-spacing:.08em;color:var(--muted)}
+h1{margin:8px 0 6px;font-family:'Space Grotesk',sans-serif;font-size:28px;line-height:1.2;letter-spacing:-.01em}
+.head p{margin:0;font-size:15px;line-height:1.4;color:var(--muted)}
+.list{display:flex;flex-direction:column;gap:12px;padding:24px 20px 0}
+.opt{display:flex;align-items:center;gap:14px;width:100%;min-height:80px;padding:14px 16px;border-radius:16px;border:2px solid var(--line);background:#fff;font:inherit;color:inherit;text-align:left;cursor:pointer}
+.opt.on{border-color:var(--brand);background:#EEF8F5}
+.ico{display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:12px;background:#E8EEEB;flex:none}
+.opt.transfer .ico{background:#E3F2EE}
+.txt{flex:1;display:flex;flex-direction:column;gap:2px}.txt b{font-size:17px;font-weight:600}.txt span{font-size:14px;color:var(--muted)}
+.radio{width:22px;height:22px;border-radius:50%;border:2px solid #7A8781;display:flex;align-items:center;justify-content:center;flex:none}
+.opt.on .radio{border-color:var(--brand)}.opt.on .radio::after{content:"";width:10px;height:10px;border-radius:50%;background:var(--brand)}
+.note{margin:4px 0 0;font-size:13px;line-height:1.4;color:var(--muted)}
+.foot{margin-top:auto;display:flex;flex-direction:column;gap:10px;padding:16px 20px 24px}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;height:56px;border-radius:14px;border:0;background:var(--brand);color:#fff;font:600 17px Inter,system-ui,sans-serif;text-decoration:none;cursor:pointer}
+.btn.sec{height:52px;background:transparent;border:1.5px solid #B9C3BD;color:var(--ink);font-size:16px}
+.btn:disabled{background:#E3E7E5;color:#5E6C75;cursor:not-allowed}
+</style>
+</head>
+<body>
+
+<div class="preview">
+Preview state (design aid, not part of the screen)
+<div class="row">
+<button type="button" id="p-on" aria-pressed="true">Terminal enabled</button>
+<button type="button" id="p-off" aria-pressed="false">Terminal not enabled</button>
+</div>
+</div>
+
+<main class="app">
+<div class="top">
+<div class="brand"><svg width="36" height="36" viewBox="0 0 36 36" aria-hidden="true"><rect width="36" height="36" rx="10" fill="#0B6B58"/><path d="M12 9h6.5a9 9 0 0 1 0 18H12z" fill="none" stroke="#fff" stroke-width="3" stroke-linejoin="round"/><path d="M15 18h6" stroke="#8FE0C8" stroke-width="3" stroke-linecap="round"/></svg>DzigsPay</div>
+<div class="chip"><span class="dot"></span>POS-0142</div>
+</div>
+<div class="prog"><i class="on"></i><i></i><i></i><i></i><i></i></div>
+<div class="head">
+<div class="step">STEP 1 OF 5</div>
+<h1>Select payment method</h1>
+<p>Choose how the customer wants to pay.</p>
+</div>
+<div class="list" id="list"></div>
+<div class="foot" id="foot"></div>
+</main>
+
+<script>
+(function () {
+  var q = new URLSearchParams(location.search);
+  var enabled = q.get('t') !== 'off';
+  var sel = 'transfer';
+  var icons = {
+    card: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0E1A24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M3 10h18"/><path d="M7 15h3"/></svg>',
+    momo: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0E1A24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="3" width="10" height="18" rx="2.5"/><path d="M11 18h2"/></svg>',
+    transfer: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0B6B58" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5L12 4.5l8 5H4z"/><path d="M5.5 12v5M9.5 12v5M14.5 12v5M18.5 12v5"/><path d="M3 20h18"/></svg>'
+  };
+  var methods = [
+    { id: 'card', name: 'Card', sub: 'Tap, insert or swipe' },
+    { id: 'momo', name: 'Mobile Money', sub: 'Customer approves on their phone' },
+    { id: 'transfer', name: 'Account Transfer', sub: 'Pay straight from a bank account' }
+  ];
+  var list = document.getElementById('list');
+  var foot = document.getElementById('foot');
+
+  function render() {
+    // Account Transfer is only offered on enabled terminals; a disabled terminal can never start it.
+    if (!enabled && sel === 'transfer') sel = null;
+    list.innerHTML = methods.filter(function (m) { return m.id !== 'transfer' || enabled; }).map(function (m) {
+      var on = sel === m.id;
+      return '<button type="button" class="opt ' + m.id + (on ? ' on' : '') + '" aria-pressed="' + on + '" data-id="' + m.id + '">' +
+        '<span class="ico">' + icons[m.id] + '</span>' +
+        '<span class="txt"><b>' + m.name + '</b><span>' + m.sub + '</span></span>' +
+        '<span class="radio"></span></button>';
+    }).join('') + '<p class="note">Methods shown depend on this terminal’s setup.</p>';
+
+    var go;
+    if (enabled && sel === 'transfer') go = '<a class="btn" href="2-enter-amount.html">Continue</a>';
+    else if (sel) go = '<button type="button" class="btn">Continue</button>';
+    else go = '<button type="button" class="btn" disabled>Continue</button>';
+    foot.innerHTML = go + '<button type="button" class="btn sec">Cancel sale</button>';
+
+    document.getElementById('p-on').setAttribute('aria-pressed', String(enabled));
+    document.getElementById('p-off').setAttribute('aria-pressed', String(!enabled));
+  }
+
+  list.addEventListener('click', function (e) {
+    var b = e.target.closest('.opt');
+    if (b) { sel = b.getAttribute('data-id'); render(); }
+  });
+  document.getElementById('p-on').onclick = function () { enabled = true; sel = 'transfer'; render(); };
+  document.getElementById('p-off').onclick = function () { enabled = false; render(); };
+  render();
+})();
+</script>
+</body>
+</html>
